@@ -18,7 +18,7 @@ const apiBaseURL = "https://zipcloud.ibsnet.co.jp/api/search";
 
 export default function ZipCodeApp() {
   const [zipcode, setZipcode] = useState<string>("");
-  const [address, setAddress] = useState<string[]>([]); 
+  const [addresses, setAddresses] = useState<string[]>([]); 
   const [isLoading, setIsLoading] = useState(false);
 
   const loadingView = <Text>loading</Text>;
@@ -28,8 +28,8 @@ export default function ZipCodeApp() {
     setIsLoading(true); //読み込み中にする
 
     try {
-      const address = await getAddressInfoAsync(zipcode);
-      setAddress(address);
+      const address: string[] = await getAddressInfoAsync(zipcode);
+      setAddresses(address);
 
       
     } catch (error) {
@@ -41,19 +41,19 @@ export default function ZipCodeApp() {
 
   const getAddressInfoAsync = async (zipcode: string) => {
 
-    const requestConfig = apiBaseURL + "?zipcode=" + zipcode;
+    const uri = apiBaseURL + "?zipcode=" + zipcode;
 
-    const responce = await axios(requestConfig);
+    const responce = await axios(uri);
     //レスポンスの最初のものをdataとして格納;
-    const address = responce.data.results;
-    console.log(address);
-    return address;
+    const addresses = responce.data.results;
+    console.log(addresses);
+    return addresses;
   };
 
   
 
 
-  const renderAddressItem = ({ item }: ListRenderItemInfo<any>) => {
+  const renderAddressItem = ({ item }: ListRenderItemInfo<string>) => {
     return (
       <Text>
         {item.address1}
@@ -66,8 +66,8 @@ export default function ZipCodeApp() {
   const getAddress = (
     <View>
       <FlatList
-        data={address}
-        keyExtractor={(item, index: any) => index}
+        data={addresses}
+        keyExtractor={(item, index: any) => String(index)}
         renderItem={renderAddressItem}
       />
     </View>
